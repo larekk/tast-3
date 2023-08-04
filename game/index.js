@@ -46,6 +46,7 @@ class Key{
         return this.hmac.createHmac('sha256', this.key).update(this.msg).digest('hex')
     }
 }
+
 class Rules extends GameArgs{
     constructor(rules, playerVar, computerVar, flag) {
         super(rules, playerVar, computerVar);
