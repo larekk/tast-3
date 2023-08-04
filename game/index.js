@@ -19,6 +19,11 @@ class GameArgs {
     }
 
      CheckArgs(){
+        for(let i = 0; i < this.rules.length; i++){
+            for(let j = i + 1; j < this.rules.length; j++){
+                if(this.rules[i].toLowerCase() === this.rules[j].toLowerCase()) return 'Similar Rules';
+            }
+        }
         if(this.rules.length <= 1){
             return '1 аргумент либо их отсутсвие';
         } else if(this.rules.length % 2 === 0){
@@ -85,13 +90,13 @@ class TableRules extends Rules{
             this.computerVar = 0;
             this.playerVar = this.rules[i];
             this.obj = new Object();
-            this.obj['< User/PC v'] = this.playerVar;
+            this.obj['User/PC'] = this.playerVar;
             for (let j = 0; j < this.rules.length; j++) {
-                this.obj[this.rules[j]] = new Rules(process.argv.slice(2), this.playerVar, this.rules[j], true).GetWinner()
+                this.obj[this.rules[j]] = new Rules(process.argv.slice(2), this.playerVar, this.rules[j], true).GetWinner();
             }
-            this.table.push(this.obj)
+            this.table.push(this.obj);
         }
-        printTable(this.table)
+        printTable(this.table);
         return '';
     }
 }
@@ -100,6 +105,7 @@ class GameMenu extends GameArgs{
         super(rules)
         this.rules = rules;
         this.prompt= require('prompt-sync')()
+        this.rulesVar;
     }
 
       ShowAvaiable(computerMove) {
@@ -107,22 +113,26 @@ class GameMenu extends GameArgs{
         this.key = new Key(KEY, HMAC)
           console.log('HMAC: ' + this.key.GetHmac(computerMove))
           console.log('Available moves:');
-        for (let rule in this.rules) {
-            console.log(`${this.i} - ${+rule + 1}`);
+        for (let rule of this.rules) {
+            console.log(`${this.i} - ${rule}`);
             this.i++;
         }
         console.log(`0 - exit`);
         console.log(`? - help`);
-        return this.playerVar = this.prompt('Your Move: ');
+		this.playerVar = this.prompt();
+		this.rulesVar = this.rules[this.playerVar - 1];
+		console.log( `Your Move: ${this.rulesVar}`)
+        return this.playerVar;
     }
 
     CheckPrompt (computerMove) {
+        this.playerIndex = this.rules.indexOf(this.rulesVar)
         if (this.playerVar === '0') {
             return 'exit';
         } else if(this.playerVar === '?') {
             return new TableRules(process.argv.slice(2)).PrintTable();
         }
-            while(this.playerVar !== this.rules[+this.playerVar - 1]){
+            while(this.playerIndex === -1){
                 if (this.playerVar === '0') {
                     return 'exit';
                 } else if(this.playerVar === '?') {
@@ -130,8 +140,9 @@ class GameMenu extends GameArgs{
                 }
                 console.log('Non-correct input');
                 this.ShowAvaiable(computerMove);
+                this.playerIndex = this.rules.indexOf(this.rulesVar)
             }
-            return new Rules(this.rules, this.playerVar, computerMove).GetWinner();
+            return new Rules(this.rules, this.rulesVar, computerMove).GetWinner();
     }
 }
 
