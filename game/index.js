@@ -25,9 +25,9 @@ class GameArgs {
             }
         }
         if(this.rules.length <= 1){
-            return '1 аргумент либо их отсутсвие';
+            return '1 or no args';
         } else if(this.rules.length % 2 === 0){
-           return 'Четное количество аргументов';
+           return 'Even args number';
         } else {
             return true;
         }
